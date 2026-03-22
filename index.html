@@ -210,6 +210,89 @@
       transform: translateY(0);
     }
 
+    .file-upload-area {
+      border: 2px dashed #0052cc;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 15px;
+      background: #f5f8ff;
+      transition: background 0.2s;
+    }
+
+    .file-upload-area:hover {
+      background: #e8efff;
+    }
+
+    .file-upload-area input[type="file"] {
+      display: none;
+      padding: 0;
+      margin: 0;
+      border: none;
+    }
+
+    .file-upload-area label {
+      cursor: pointer;
+      color: #0052cc;
+      font-weight: 600;
+      font-size: 1em;
+      display: block;
+    }
+
+    .file-upload-area label:hover {
+      color: #003a99;
+    }
+
+    .attachments-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .attachment-item {
+      position: relative;
+      width: 110px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .attachment-item img {
+      width: 110px;
+      height: 90px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .attachment-name {
+      font-size: 10px;
+      text-align: center;
+      padding: 4px;
+      background: #f8f9fa;
+      border-top: 1px solid #ddd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .attachment-remove {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      background: rgba(220, 53, 69, 0.85);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 20px;
+      text-align: center;
+      padding: 0;
+    }
+
     .logo {
       text-align: center;
       margin-bottom: 30px;
@@ -294,12 +377,14 @@
         <input type="time" placeholder="Godzina" required style="flex: 1;">
       </div>
       <input type="text" placeholder="Miejsce zdarzenia" required>
-      <textarea placeholder="Opis sytuacji (szczegółowy opis przyczyn i przebiegu zdarzenia)" required></textarea>
-      <textarea placeholder="Osoby zaangażowane"></textarea>
-      <textarea placeholder="Co jest nielegalne / problematyczne" required></textarea>
+      <textarea placeholder="Opis sytuacji (szczegółowy opis przyczyn i przebiegu zdarzenia)" required style="min-height: 250px;"></textarea>
 
       <h3>Załączniki</h3>
-      <input type="file">
+      <div class="file-upload-area">
+        <input type="file" id="files-karne" accept="image/*" multiple onchange="handleFiles(this)">
+        <label for="files-karne">📎 Kliknij aby dodać zdjęcia jako załączniki</label>
+      </div>
+      <div class="attachments-preview"></div>
 
       <h3>Zgody</h3>
       <label><input type="checkbox" required> Potwierdzam prawdziwość danych</label><br>
@@ -329,12 +414,14 @@
         <input type="time" placeholder="Godzina" required style="flex: 1;">
       </div>
       <input type="text" placeholder="Miejsce zdarzenia" required>
-      <textarea placeholder="Opis sytuacji (szczegółowy opis przyczyn i przebiegu zdarzenia)" required></textarea>
-      <textarea placeholder="Osoby zaangażowane"></textarea>
-      <textarea placeholder="Co jest nielegalne / problematyczne" required></textarea>
+      <textarea placeholder="Opis sytuacji (szczegółowy opis przyczyn i przebiegu zdarzenia)" required style="min-height: 250px;"></textarea>
 
       <h3>Załączniki</h3>
-      <input type="file">
+      <div class="file-upload-area">
+        <input type="file" id="files-funkcjonariusze" accept="image/*" multiple onchange="handleFiles(this)">
+        <label for="files-funkcjonariusze">📎 Kliknij aby dodać zdjęcia jako załączniki</label>
+      </div>
+      <div class="attachments-preview"></div>
 
       <h3>Zgody</h3>
       <label><input type="checkbox" required> Potwierdzam prawdziwość danych</label><br>
@@ -353,6 +440,28 @@
 function openTab(tabId) {
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
+}
+
+function handleFiles(input) {
+  const preview = input.closest('form').querySelector('.attachments-preview');
+  Array.from(input.files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const item = document.createElement('div');
+      item.className = 'attachment-item';
+      item.dataset.dataUrl = e.target.result;
+      item.dataset.name = file.name;
+      item.innerHTML = `
+        <img src="${e.target.result}" alt="${file.name}">
+        <div class="attachment-name">${file.name}</div>
+        <button type="button" class="attachment-remove" onclick="this.closest('.attachment-item').remove()">×</button>
+      `;
+      preview.appendChild(item);
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
 }
 
 function downloadPDF(form) {
@@ -414,7 +523,7 @@ function downloadPDF(form) {
           htmlContent += `<p style="margin: 6px 0; font-size: 12px;">✓ ${input.parentElement.textContent.trim()}</p>`;
         }
       } else if (input.type === 'file') {
-        // Pomiń pliki
+        // Pliki obsługiwane osobno poniżej
       } else if (input.value.trim()) {
         const field = input.placeholder || input.name || 'Pole';
         const value = input.value;
@@ -425,6 +534,17 @@ function downloadPDF(form) {
       }
     });
     
+    // Dodaj załączone zdjęcia
+    const attachmentItems = form.querySelectorAll('.attachment-item');
+    if (attachmentItems.length > 0) {
+      htmlContent += `<h3 style="color: #003d80; font-size: 14px; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #ddd; padding-bottom: 5px;">ZAŁĄCZNIKI (${attachmentItems.length})</h3>`;
+      htmlContent += `<div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px;">`;
+      attachmentItems.forEach(item => {
+        htmlContent += `<div style="text-align: center; border: 1px solid #ddd; border-radius: 5px; padding: 5px;"><img src="${item.dataset.dataUrl}" style="max-width: 200px; max-height: 200px; display: block;"><p style="font-size: 10px; margin: 4px 0 0 0; color: #555;">${item.dataset.name}</p></div>`;
+      });
+      htmlContent += `</div>`;
+    }
+
     htmlContent += `
       </div>
       <div style="margin-top: 30px; border-top: 2px solid #0052cc; padding-top: 15px; font-size: 11px; color: #666;">

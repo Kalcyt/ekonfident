@@ -298,10 +298,10 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, #001a4d 0%, #003d80 100%);
+      background: #d9d9d9;
       z-index: 9999;
       overflow-y: auto;
-      padding: 30px 20px;
+      padding: 16px;
     }
 
     #preview-overlay.visible {
@@ -309,120 +309,113 @@
     }
 
     #preview-content {
-      max-width: 900px;
+      max-width: 1400px;
       margin: 0 auto;
-      background: white;
-      border-radius: 10px;
-      padding: 50px;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+      background: #d9d9d9;
+      border-radius: 0;
+      padding: 14px 18px 20px;
+      box-shadow: none;
     }
 
     #preview-content .preview-logo {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 14px;
     }
 
     #preview-content .preview-logo img {
-      max-width: 100px;
+      max-width: 84px;
     }
 
     #preview-content h1 {
       color: #001a4d;
-      font-size: 1.8em;
-      border-bottom: 3px solid #0052cc;
-      padding-bottom: 12px;
-      margin-bottom: 25px;
+      font-size: 42px;
+      border-bottom: 3px solid #0d5ad8;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
       text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.2px;
     }
 
     #preview-content h3 {
-      color: #003d80;
-      font-size: 1em;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 6px;
-      margin: 22px 0 12px;
+      color: #333;
+      font-size: 1.05em;
+      text-transform: none;
+      letter-spacing: 0;
+      border-bottom: none;
+      padding-bottom: 0;
+      margin: 14px 0 8px;
     }
 
     #preview-content .preview-field {
-      margin-bottom: 10px;
-      font-size: 0.95em;
-      line-height: 1.6;
+      margin-bottom: 5px;
+      font-size: 1em;
+      line-height: 1.35;
     }
 
     #preview-content .preview-field strong {
-      color: #333;
-    }
-
-    #preview-content .preview-field .field-value {
-      background: #f5f8ff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 8px 12px;
-      margin-top: 3px;
-      white-space: pre-wrap;
+      color: #1f1f1f;
+      font-weight: 700;
     }
 
     #preview-content .preview-check {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin: 6px 0;
-      font-size: 0.95em;
+      margin: 5px 0;
+      font-size: 1em;
     }
 
     #preview-content .preview-check .checkmark {
-      width: 18px; height: 18px;
-      background: #0052cc;
-      border-radius: 3px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 12px;
+      width: auto;
+      height: auto;
+      background: transparent;
+      border-radius: 0;
+      display: inline;
+      color: #1a1a1a;
+      font-size: 1em;
       flex-shrink: 0;
     }
 
     #preview-content .preview-attachments {
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+      flex-direction: column;
+      gap: 20px;
       margin-top: 10px;
     }
 
     #preview-content .preview-attachment {
       border: 1px solid #ddd;
-      border-radius: 5px;
+      border-radius: 2px;
       overflow: hidden;
-      text-align: center;
-      width: 160px;
+      width: 100%;
+      background: white;
     }
 
     #preview-content .preview-attachment img {
-      width: 160px;
-      height: 130px;
-      object-fit: cover;
+      width: 100%;
+      height: auto;
       display: block;
     }
 
     #preview-content .preview-attachment p {
-      font-size: 10px;
-      padding: 4px;
+      font-size: 12px;
+      padding: 8px 10px;
       background: #f8f9fa;
       margin: 0;
+      color: #555;
     }
 
     #preview-content .preview-footer {
       margin-top: 30px;
-      border-top: 2px solid #0052cc;
+      border-top: 3px solid #0d5ad8;
       padding-top: 15px;
-      font-size: 12px;
-      color: #666;
+      font-size: 1em;
+      color: #333;
     }
 
     .preview-actions {
-      max-width: 900px;
+      max-width: 1400px;
       margin: 25px auto 0;
       display: flex;
       gap: 15px;
@@ -509,6 +502,15 @@
       nav button {
         padding: 10px 20px;
         font-size: 0.9em;
+      }
+
+      #preview-content {
+        max-width: 100%;
+        padding: 12px;
+      }
+
+      #preview-content h1 {
+        font-size: 30px;
       }
 
       .logo img {
@@ -654,25 +656,32 @@ function buildPreviewHTML(form) {
   let html = `<div class="preview-logo">${logo ? `<img src="${logo.src}" alt="Logo">` : ''}</div>`;
   html += `<h1>${title}</h1>`;
 
+  const escapeHtml = (value) => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
   const children = Array.from(form.children);
   let i = 0;
   while (i < children.length) {
     const el = children[i];
     if (el.tagName === 'H3') {
-      html += `<h3>${el.textContent}</h3>`;
+      // Zachowujemy układ podobny do poprzedniego PDF: bez dodatkowych nagłówków sekcji
     } else if (el.tagName === 'INPUT') {
       if (el.type === 'checkbox') {
         if (el.checked) {
-          html += `<div class="preview-check"><span class="checkmark">&#10003;</span> ${el.parentElement ? el.parentElement.textContent.trim() : ''}</div>`;
+          html += `<div class="preview-check"><span class="checkmark">&#10003;</span> ${escapeHtml(el.parentElement ? el.parentElement.textContent.trim() : '')}</div>`;
         }
       } else if (el.type !== 'file') {
         if (el.value.trim()) {
-          html += `<div class="preview-field"><strong>${el.placeholder || 'Pole'}:</strong><div class="field-value">${el.value}</div></div>`;
+          html += `<div class="preview-field"><strong>${escapeHtml(el.placeholder || 'Pole')}:</strong> ${escapeHtml(el.value)}</div>`;
         }
       }
     } else if (el.tagName === 'TEXTAREA') {
       if (el.value.trim()) {
-        html += `<div class="preview-field"><strong>${el.placeholder || 'Pole'}:</strong><div class="field-value">${el.value}</div></div>`;
+        html += `<div class="preview-field"><strong>${escapeHtml(el.placeholder || 'Pole')}:</strong> ${escapeHtml(el.value).replace(/\n/g, '<br>')}</div>`;
       }
     } else if (el.tagName === 'DIV') {
       // Wiersz z datą i godziną lub załączniki-preview
@@ -682,7 +691,7 @@ function buildPreviewHTML(form) {
         if (attachPreviews.length > 0) {
           html += `<h3>Załączniki (${attachPreviews.length})</h3><div class="preview-attachments">`;
           attachPreviews.forEach(item => {
-            html += `<div class="preview-attachment"><img src="${item.dataset.dataUrl}" alt="${item.dataset.name}"><p>${item.dataset.name}</p></div>`;
+            html += `<div class="preview-attachment"><img src="${item.dataset.dataUrl}" alt="${escapeHtml(item.dataset.name || 'załącznik')}"><p>${escapeHtml(item.dataset.name || '')}</p></div>`;
           });
           html += `</div>`;
         }
@@ -691,7 +700,7 @@ function buildPreviewHTML(form) {
       } else {
         inputs.forEach(inp => {
           if (inp.value.trim()) {
-            html += `<div class="preview-field"><strong>${inp.placeholder || inp.type || 'Pole'}:</strong><div class="field-value">${inp.value}</div></div>`;
+            html += `<div class="preview-field"><strong>${escapeHtml(inp.placeholder || inp.type || 'Pole')}:</strong> ${escapeHtml(inp.value)}</div>`;
           }
         });
       }
@@ -699,7 +708,7 @@ function buildPreviewHTML(form) {
       const cb = el.querySelector('input[type="checkbox"]');
       if (cb && cb.checked) {
         const text = el.textContent.trim();
-        html += `<div class="preview-check"><span class="checkmark">&#10003;</span> ${text}</div>`;
+        html += `<div class="preview-check"><span class="checkmark">&#10003;</span> ${escapeHtml(text)}</div>`;
       }
     } else if (el.tagName === 'BR' || el.tagName === 'BUTTON') {
       // pomiń
@@ -709,7 +718,6 @@ function buildPreviewHTML(form) {
 
   html += `<div class="preview-footer">
     <p><strong>Data wygenerowania:</strong> ${new Date().toLocaleString('pl-PL')}</p>
-    <p>Dokument wygenerowany automatycznie z systemu zgłoszeń do prokuratury.</p>
   </div>`;
 
   return html;

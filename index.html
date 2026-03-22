@@ -293,6 +293,179 @@
       padding: 0;
     }
 
+    /* Nakładka podglądu */
+    #preview-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #001a4d 0%, #003d80 100%);
+      z-index: 9999;
+      overflow-y: auto;
+      padding: 30px 20px;
+    }
+
+    #preview-overlay.visible {
+      display: block;
+    }
+
+    #preview-content {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      padding: 50px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+
+    #preview-content .preview-logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    #preview-content .preview-logo img {
+      max-width: 100px;
+    }
+
+    #preview-content h1 {
+      color: #001a4d;
+      font-size: 1.8em;
+      border-bottom: 3px solid #0052cc;
+      padding-bottom: 12px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    #preview-content h3 {
+      color: #003d80;
+      font-size: 1em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+      margin: 22px 0 12px;
+    }
+
+    #preview-content .preview-field {
+      margin-bottom: 10px;
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    #preview-content .preview-field strong {
+      color: #333;
+    }
+
+    #preview-content .preview-field .field-value {
+      background: #f5f8ff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin-top: 3px;
+      white-space: pre-wrap;
+    }
+
+    #preview-content .preview-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+      font-size: 0.95em;
+    }
+
+    #preview-content .preview-check .checkmark {
+      width: 18px; height: 18px;
+      background: #0052cc;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    #preview-content .preview-attachments {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    #preview-content .preview-attachment {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      text-align: center;
+      width: 160px;
+    }
+
+    #preview-content .preview-attachment img {
+      width: 160px;
+      height: 130px;
+      object-fit: cover;
+      display: block;
+    }
+
+    #preview-content .preview-attachment p {
+      font-size: 10px;
+      padding: 4px;
+      background: #f8f9fa;
+      margin: 0;
+    }
+
+    #preview-content .preview-footer {
+      margin-top: 30px;
+      border-top: 2px solid #0052cc;
+      padding-top: 15px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .preview-actions {
+      max-width: 900px;
+      margin: 25px auto 0;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.5);
+      padding: 14px 35px;
+      font-size: 1em;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .btn-download-pdf {
+      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+      color: white;
+      border: none;
+      padding: 14px 35px;
+      font-size: 1em;
+      font-weight: 700;
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-download-pdf:hover {
+      background: linear-gradient(135deg, #1e7e34 0%, #145a25 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+    }
+
     .logo {
       text-align: center;
       margin-bottom: 30px;
@@ -391,7 +564,7 @@
       <label><input type="checkbox" required> Jestem świadom konsekwencji prawnych wynikających z fałszywego zawiadomienia</label>
 
       <br><br>
-      <button type="button" class="submit-btn" onclick="downloadPDF(this.closest('form'))">Pobierz wypełniony formularz</button>
+      <button type="button" class="submit-btn" onclick="showPreview(this.closest('form'))">Zatwierdź</button>
     </form>
   </div>
 
@@ -428,10 +601,19 @@
       <label><input type="checkbox" required> Jestem świadom konsekwencji prawnych wynikających z fałszywego zawiadomienia</label>
 
       <br><br>
-      <button type="button" class="submit-btn" onclick="downloadPDF(this.closest('form'))">Pobierz wypełniony formularz</button>
+      <button type="button" class="submit-btn" onclick="showPreview(this.closest('form'))">Zatwierdź</button>
     </form>
   </div>
 
+</div>
+
+<!-- Nakładka podglądu -->
+<div id="preview-overlay">
+  <div id="preview-content"></div>
+  <div class="preview-actions">
+    <button class="btn-back" onclick="closePreview()">&#8592; Wróć do formularza</button>
+    <button class="btn-download-pdf" id="btn-download-pdf" onclick="downloadFromPreview()">&#8595; Pobierz jako PDF</button>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -464,148 +646,130 @@ function handleFiles(input) {
   input.value = '';
 }
 
-function downloadPDF(form) {
-  // Sprawdzenie czy formularz jest wypełniony
+let currentForm = null;
+
+function buildPreviewHTML(form) {
+  const title = form.closest('.tab').querySelector('h2').textContent.trim();
+  const logo = document.querySelector('.logo img');
+  let html = `<div class="preview-logo">${logo ? `<img src="${logo.src}" alt="Logo">` : ''}</div>`;
+  html += `<h1>${title}</h1>`;
+
+  const children = Array.from(form.children);
+  let i = 0;
+  while (i < children.length) {
+    const el = children[i];
+    if (el.tagName === 'H3') {
+      html += `<h3>${el.textContent}</h3>`;
+    } else if (el.tagName === 'INPUT') {
+      if (el.type === 'checkbox') {
+        if (el.checked) {
+          html += `<div class="preview-check"><span class="checkmark">&#10003;</span> ${el.parentElement ? el.parentElement.textContent.trim() : ''}</div>`;
+        }
+      } else if (el.type !== 'file') {
+        if (el.value.trim()) {
+          html += `<div class="preview-field"><strong>${el.placeholder || 'Pole'}:</strong><div class="field-value">${el.value}</div></div>`;
+        }
+      }
+    } else if (el.tagName === 'TEXTAREA') {
+      if (el.value.trim()) {
+        html += `<div class="preview-field"><strong>${el.placeholder || 'Pole'}:</strong><div class="field-value">${el.value}</div></div>`;
+      }
+    } else if (el.tagName === 'DIV') {
+      // Wiersz z datą i godziną lub załączniki-preview
+      const inputs = el.querySelectorAll('input');
+      const attachPreviews = el.querySelectorAll('.attachment-item');
+      if (el.classList.contains('attachments-preview')) {
+        if (attachPreviews.length > 0) {
+          html += `<h3>Załączniki (${attachPreviews.length})</h3><div class="preview-attachments">`;
+          attachPreviews.forEach(item => {
+            html += `<div class="preview-attachment"><img src="${item.dataset.dataUrl}" alt="${item.dataset.name}"><p>${item.dataset.name}</p></div>`;
+          });
+          html += `</div>`;
+        }
+      } else if (el.classList.contains('file-upload-area')) {
+        // pomiń
+      } else {
+        inputs.forEach(inp => {
+          if (inp.value.trim()) {
+            html += `<div class="preview-field"><strong>${inp.placeholder || inp.type || 'Pole'}:</strong><div class="field-value">${inp.value}</div></div>`;
+          }
+        });
+      }
+    } else if (el.tagName === 'LABEL') {
+      const cb = el.querySelector('input[type="checkbox"]');
+      if (cb && cb.checked) {
+        const text = el.textContent.trim();
+        html += `<div class="preview-check"><span class="checkmark">&#10003;</span> ${text}</div>`;
+      }
+    } else if (el.tagName === 'BR' || el.tagName === 'BUTTON') {
+      // pomiń
+    }
+    i++;
+  }
+
+  html += `<div class="preview-footer">
+    <p><strong>Data wygenerowania:</strong> ${new Date().toLocaleString('pl-PL')}</p>
+    <p>Dokument wygenerowany automatycznie z systemu zgłoszeń do prokuratury.</p>
+  </div>`;
+
+  return html;
+}
+
+function showPreview(form) {
   if (!form.checkValidity()) {
-    alert('Proszę wypełnić wszystkie wymagane pola przed pobraniem formularza');
+    alert('Proszę wypełnić wszystkie wymagane pola przed zatwierdzeniem');
     form.reportValidity();
     return;
   }
-  
-  try {
-    // Wyświetl informację o generowaniu
-    const originalText = event.target.textContent;
-    event.target.textContent = 'Generowanie PDF...';
-    event.target.disabled = true;
-    
-    // Utwórz kontener do renderowania PDF
-    const pdfContainer = document.createElement('div');
-    pdfContainer.style.position = 'absolute';
-    pdfContainer.style.left = '-9999px';
-    pdfContainer.style.width = '1000px';
-    pdfContainer.style.backgroundColor = 'white';
-    pdfContainer.style.padding = '40px';
-    pdfContainer.style.fontFamily = 'Arial, sans-serif';
-    
-    const title = form.closest('.tab').querySelector('h2').textContent;
-    const logo = document.querySelector('.logo img');
-    const header = document.querySelector('header');
-    
-    let htmlContent = `
-      <div style="text-align: center; margin-bottom: 30px;">
-        ${logo ? `<img src="${logo.src}" alt="Logo" style="max-width: 100px; margin-bottom: 15px;">` : ''}
-        <h1 style="color: #001a4d; font-size: 24px; margin: 10px 0; border-bottom: 2px solid #0052cc; padding-bottom: 10px;">
-          ${title}
-        </h1>
-      </div>
-      <div style="margin-bottom: 20px;">
-    `;
-    
-    const inputs = form.querySelectorAll('input, textarea, select');
-    let currentSection = '';
-    
-    inputs.forEach(input => {
-      // Sprawdź czy jest nowa sekcja
-      const h3 = input.closest('form').querySelector('h3');
-      if (h3) {
-        const parentH3 = Array.from(form.children).find(el => {
-          return el.contains(input) && el.tagName === 'H3';
-        });
-        
-        if (parentH3 && parentH3.textContent !== currentSection) {
-          currentSection = parentH3.textContent;
-          htmlContent += `<h3 style="color: #003d80; font-size: 14px; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #ddd; padding-bottom: 5px;">${currentSection}</h3>`;
-        }
-      }
-      
-      if (input.type === 'checkbox') {
-        if (input.checked) {
-          htmlContent += `<p style="margin: 6px 0; font-size: 12px;">✓ ${input.parentElement.textContent.trim()}</p>`;
-        }
-      } else if (input.type === 'file') {
-        // Pliki obsługiwane osobno poniżej
-      } else if (input.value.trim()) {
-        const field = input.placeholder || input.name || 'Pole';
-        const value = input.value;
-        htmlContent += `<p style="margin: 6px 0; font-size: 12px;"><strong>${field}:</strong> ${value}</p>`;
-      } else if (input.required) {
-        const field = input.placeholder || input.name || 'Pole';
-        htmlContent += `<p style="margin: 6px 0; font-size: 12px; color: #999;"><strong>${field}:</strong> [nie wypełnione]</p>`;
-      }
-    });
-    
-    // Dodaj załączone zdjęcia
-    const attachmentItems = form.querySelectorAll('.attachment-item');
-    if (attachmentItems.length > 0) {
-      htmlContent += `<h3 style="color: #003d80; font-size: 14px; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #ddd; padding-bottom: 5px;">ZAŁĄCZNIKI (${attachmentItems.length})</h3>`;
-      htmlContent += `<div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px;">`;
-      attachmentItems.forEach(item => {
-        htmlContent += `<div style="text-align: center; border: 1px solid #ddd; border-radius: 5px; padding: 5px;"><img src="${item.dataset.dataUrl}" style="max-width: 200px; max-height: 200px; display: block;"><p style="font-size: 10px; margin: 4px 0 0 0; color: #555;">${item.dataset.name}</p></div>`;
-      });
-      htmlContent += `</div>`;
-    }
+  currentForm = form;
+  document.getElementById('preview-content').innerHTML = buildPreviewHTML(form);
+  const overlay = document.getElementById('preview-overlay');
+  overlay.classList.add('visible');
+  overlay.scrollTop = 0;
+}
 
-    htmlContent += `
-      </div>
-      <div style="margin-top: 30px; border-top: 2px solid #0052cc; padding-top: 15px; font-size: 11px; color: #666;">
-        <p><strong>Data wygenerowania:</strong> ${new Date().toLocaleString('pl-PL')}</p>
-        <p>Dokument wygenerowany automatycznie z systemu zgłoszeń do prokuratury.</p>
-      </div>
-    `;
-    
-    pdfContainer.innerHTML = htmlContent;
-    document.body.appendChild(pdfContainer);
-    
-    // Konwertuj do canvas i następnie PDF
-    html2canvas(pdfContainer, {
-      scale: 2,
-      backgroundColor: '#ffffff',
-      useCORS: true
-    }).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 295; // A4 height in mm
-      let imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      
-      const jsPDF = window.jspdf.jsPDF;
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      
+function closePreview() {
+  document.getElementById('preview-overlay').classList.remove('visible');
+  currentForm = null;
+}
+
+function downloadFromPreview() {
+  const btn = document.getElementById('btn-download-pdf');
+  const original = btn.textContent;
+  btn.textContent = 'Generowanie...';
+  btn.disabled = true;
+
+  const content = document.getElementById('preview-content');
+  html2canvas(content, {
+    scale: 2,
+    backgroundColor: '#ffffff',
+    useCORS: true
+  }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = 210;
+    const pageHeight = 297;
+    let imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    const jsPDF = window.jspdf.jsPDF;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    let position = 0;
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while (heightLeft > 0) {
+      position -= pageHeight;
+      pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
-      
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-      
-      pdf.save(`zgloszenie_${new Date().getTime()}.pdf`);
-      
-      // Usuń kontener
-      document.body.removeChild(pdfContainer);
-      
-      // Przywróć stan przycisku
-      event.target.textContent = originalText;
-      event.target.disabled = false;
-      
-      alert('Formularz pobrany pomyślnie jako PDF!');
-      
-    }).catch(err => {
-      console.error('Błąd generowania PDF:', err);
-      document.body.removeChild(pdfContainer);
-      event.target.textContent = originalText;
-      event.target.disabled = false;
-      alert('Błąd podczas generowania PDF. Spróbuj ponownie.');
-    });
-    
-  } catch (error) {
-    console.error('Błąd:', error);
-    event.target.disabled = false;
-    alert('Nieoczekiwany błąd podczas pobierania formularza');
-  }
+    }
+    pdf.save(`zgloszenie_${new Date().getTime()}.pdf`);
+    btn.textContent = original;
+    btn.disabled = false;
+  }).catch(err => {
+    console.error(err);
+    alert('Błąd podczas generowania PDF. Spróbuj ponownie.');
+    btn.textContent = original;
+    btn.disabled = false;
+  });
 }
 </script>
 

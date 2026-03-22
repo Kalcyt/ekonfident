@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zgłoszenia do prokuratury</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #001a4d 0%, #003d80 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      background: rgba(0, 30, 80, 0.95);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      opacity: 0.95;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    nav {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      background: #0052cc;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    nav button:hover {
+      background: #003a99;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    nav button:active {
+      transform: translateY(0);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .tab {
+      display: none;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tab h2 {
+      color: #001a4d;
+      margin-bottom: 30px;
+      font-size: 2em;
+      border-bottom: 3px solid #0052cc;
+      padding-bottom: 15px;
+    }
+
+    .tab h3 {
+      color: #003d80;
+      margin-top: 25px;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="file"],
+    textarea {
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 1em;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="date"]:focus,
+    input[type="file"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #0052cc;
+      box-shadow: 0 0 8px rgba(0, 82, 204, 0.2);
+    }
+
+    input[type="text"]::placeholder,
+    input[type="tel"]::placeholder,
+    textarea::placeholder {
+      color: #999;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+    }
+
+    label {
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    label:hover {
+      color: #0052cc;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      accent-color: #0052cc;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 25px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #1e7e34 0%, #145a25 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+      animation: slideDown 0.5s ease;
+    }
+
+    .logo img {
+      max-width: 150px;
+      height: auto;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.8em;
+      }
+
+      header p {
+        font-size: 0.95em;
+      }
+
+      .tab {
+        padding: 25px;
+      }
+
+      nav {
+        gap: 10px;
+      }
+
+      nav button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+      }
+
+      .logo img {
+        max-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="logo">
+  <img src="LOGO.png" alt="Department of Justice Logo">
+</div>
+
+<header>
+  <h1>Zawiadomienie do Prokuratury</h1>
+  <p>Zawiadomienie do Prokuratury to formalne zawiadomienie o podejrzeniu popełnienia przestępstwa lub naruszenia prawa przez osobę fizyczną, firmę lub funkcjonariusza publicznego.</p>
+</header>
+
+<div class="container">
+
+  <div id="karne" class="tab active">
+    <h2>Zgłoszenie sprawy karnej / funkcjonariusza
+    </h2>
+    <form>
+      <h3>Dane zgłaszającego</h3>
+      <input type="text" placeholder="Imię" required>
+      <input type="text" placeholder="Nazwisko" required>
+      <input type="text" placeholder="Numer SSN" required>
+      <input type="tel" placeholder="Numer telefonu" required>
+
+      <h3>Dane osoby / podmiotu</h3>
+      <input type="text" placeholder="Imię i nazwisko / nazwa firmy" required>
+      <textarea placeholder="Dodatkowe informacje (np. adres, szczegóły)"></textarea>
+
+      <h3>Szczegóły sprawy</h3>
+      <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+        <input type="date" placeholder="Data zdarzenia" required style="flex: 1;">
+        <input type="time" placeholder="Godzina" required style="flex: 1;">
+      </div>
+      <input type="text" placeholder="Miejsce zdarzenia" required>
+      <textarea placeholder="Opis sytuacji (szczegółowy opis przyczyn i przebiegu zdarzenia)" required></textarea>
+      <textarea placeholder="Osoby zaangażowane"></textarea>
+      <textarea placeholder="Co jest nielegalne / problematyczne" required></textarea>
+
+      <h3>Załączniki</h3>
+      <input type="file">
+
+      <h3>Zgody</h3>
+      <label><input type="checkbox" required> Potwierdzam prawdziwość danych</label><br>
+      <label><input type="checkbox" required> Jestem świadom konsekwencji prawnych wynikających z fałszywego zawiadomienia</label>
+
+      <br><br>
+      <button type="button" class="submit-btn" onclick="downloadPDF(this.closest('form'))">Pobierz wypełniony formularz</button>
+    </form>
+  </div>
+
+  <div id="funkcjonariusze" class="tab">
+    <h2>Zgłoszenie naruszenia przez funkcjonariusza</h2>
+    <form>
+      <h3>Dane zgłaszającego</h3>
+      <input type="text" placeholder="Imię" required>
+      <input type="text" placeholder="Nazwisko" required>
+      <input type="text" placeholder="Numer SSN" required>
+      <input type="tel" placeholder="Numer telefonu" required>
+
+      <h3>Dane funkcjonariusza</h3>
+      <input type="text" placeholder="Imię i nazwisko / jednostka" required>
+      <textarea placeholder="Dodatkowe informacje (np. nr odznaki, adres)"></textarea>
+
+      <h3>Szczegóły sprawy</h3>
+      <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+        <input type="date" placeholder="Data zdarzenia" required style="flex: 1;">
+        <input type="time" placeholder="Godzina" required style="flex: 1;">
+      </div>
+      <input type="text" placeholder="Miejsce zdarzenia" required>
+      <textarea placeholder="Opis sytuacji (szczegółowy opis przyczyn i przebiegu zdarzenia)" required></textarea>
+      <textarea placeholder="Osoby zaangażowane"></textarea>
+      <textarea placeholder="Co jest nielegalne / problematyczne" required></textarea>
+
+      <h3>Załączniki</h3>
+      <input type="file">
+
+      <h3>Zgody</h3>
+      <label><input type="checkbox" required> Potwierdzam prawdziwość danych</label><br>
+      <label><input type="checkbox" required> Jestem świadom konsekwencji prawnych wynikających z fałszywego zawiadomienia</label>
+
+      <br><br>
+      <button type="button" class="submit-btn" onclick="downloadPDF(this.closest('form'))">Pobierz wypełniony formularz</button>
+    </form>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+function openTab(tabId) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+function downloadPDF(form) {
+  // Sprawdzenie czy formularz jest wypełniony
+  if (!form.checkValidity()) {
+    alert('Proszę wypełnić wszystkie wymagane pola przed pobraniem formularza');
+    form.reportValidity();
+    return;
+  }
+  
+  try {
+    // Wyświetl informację o generowaniu
+    const originalText = event.target.textContent;
+    event.target.textContent = 'Generowanie PDF...';
+    event.target.disabled = true;
+    
+    // Utwórz kontener do renderowania PDF
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.width = '1000px';
+    pdfContainer.style.backgroundColor = 'white';
+    pdfContainer.style.padding = '40px';
+    pdfContainer.style.fontFamily = 'Arial, sans-serif';
+    
+    const title = form.closest('.tab').querySelector('h2').textContent;
+    const logo = document.querySelector('.logo img');
+    const header = document.querySelector('header');
+    
+    let htmlContent = `
+      <div style="text-align: center; margin-bottom: 30px;">
+        ${logo ? `<img src="${logo.src}" alt="Logo" style="max-width: 100px; margin-bottom: 15px;">` : ''}
+        <h1 style="color: #001a4d; font-size: 24px; margin: 10px 0; border-bottom: 2px solid #0052cc; padding-bottom: 10px;">
+          ${title}
+        </h1>
+      </div>
+      <div style="margin-bottom: 20px;">
+    `;
+    
+    const inputs = form.querySelectorAll('input, textarea, select');
+    let currentSection = '';
+    
+    inputs.forEach(input => {
+      // Sprawdź czy jest nowa sekcja
+      const h3 = input.closest('form').querySelector('h3');
+      if (h3) {
+        const parentH3 = Array.from(form.children).find(el => {
+          return el.contains(input) && el.tagName === 'H3';
+        });
+        
+        if (parentH3 && parentH3.textContent !== currentSection) {
+          currentSection = parentH3.textContent;
+          htmlContent += `<h3 style="color: #003d80; font-size: 14px; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid #ddd; padding-bottom: 5px;">${currentSection}</h3>`;
+        }
+      }
+      
+      if (input.type === 'checkbox') {
+        if (input.checked) {
+          htmlContent += `<p style="margin: 6px 0; font-size: 12px;">✓ ${input.parentElement.textContent.trim()}</p>`;
+        }
+      } else if (input.type === 'file') {
+        // Pomiń pliki
+      } else if (input.value.trim()) {
+        const field = input.placeholder || input.name || 'Pole';
+        const value = input.value;
+        htmlContent += `<p style="margin: 6px 0; font-size: 12px;"><strong>${field}:</strong> ${value}</p>`;
+      } else if (input.required) {
+        const field = input.placeholder || input.name || 'Pole';
+        htmlContent += `<p style="margin: 6px 0; font-size: 12px; color: #999;"><strong>${field}:</strong> [nie wypełnione]</p>`;
+      }
+    });
+    
+    htmlContent += `
+      </div>
+      <div style="margin-top: 30px; border-top: 2px solid #0052cc; padding-top: 15px; font-size: 11px; color: #666;">
+        <p><strong>Data wygenerowania:</strong> ${new Date().toLocaleString('pl-PL')}</p>
+        <p>Dokument wygenerowany automatycznie z systemu zgłoszeń do prokuratury.</p>
+      </div>
+    `;
+    
+    pdfContainer.innerHTML = htmlContent;
+    document.body.appendChild(pdfContainer);
+    
+    // Konwertuj do canvas i następnie PDF
+    html2canvas(pdfContainer, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true
+    }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 295; // A4 height in mm
+      let imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      
+      const jsPDF = window.jspdf.jsPDF;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(`zgloszenie_${new Date().getTime()}.pdf`);
+      
+      // Usuń kontener
+      document.body.removeChild(pdfContainer);
+      
+      // Przywróć stan przycisku
+      event.target.textContent = originalText;
+      event.target.disabled = false;
+      
+      alert('Formularz pobrany pomyślnie jako PDF!');
+      
+    }).catch(err => {
+      console.error('Błąd generowania PDF:', err);
+      document.body.removeChild(pdfContainer);
+      event.target.textContent = originalText;
+      event.target.disabled = false;
+      alert('Błąd podczas generowania PDF. Spróbuj ponownie.');
+    });
+    
+  } catch (error) {
+    console.error('Błąd:', error);
+    event.target.disabled = false;
+    alert('Nieoczekiwany błąd podczas pobierania formularza');
+  }
+}
+</script>
+
+</body>
+</html>

@@ -475,9 +475,17 @@
     #preview-content .preview-signature {
       min-width: 300px;
       text-align: center;
-      padding-top: 8px;
-      border-top: 1px solid #000;
       font-size: 0.9em;
+    }
+
+    #preview-content .preview-sign-name {
+      margin-bottom: 8px;
+    }
+
+    #preview-content .preview-sign-line {
+      border-top: 1px solid #000;
+      height: 1px;
+      margin-bottom: 6px;
     }
 
     #preview-content .preview-section,
@@ -924,7 +932,7 @@ function buildPreviewHTML(form) {
 
   html += `<div class="preview-footer">
     <p>Powyższe dane oświadczam jako zgodne z prawdą i kompletne na dzień sporządzenia niniejszego zawiadomienia.</p>
-    <div class="preview-sign-row"><div class="preview-signature">${escapeHtml(fullName || 'Brak danych')}<br>podpis</div></div>
+    <div class="preview-sign-row"><div class="preview-signature"><div class="preview-sign-name">${escapeHtml(fullName || 'Brak danych')}</div><div class="preview-sign-line"></div><div>podpis</div></div></div>
   </div>`;
 
   return html;

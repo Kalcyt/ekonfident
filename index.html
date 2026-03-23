@@ -803,7 +803,7 @@
 
 </div>
 
-<!-- Nakładka podglądu -->
+
 <div id="preview-overlay">
   <div class="preview-overlay-header">Podgląd formularza</div>
   <div id="preview-content" class="preview-document"></div>
@@ -903,7 +903,6 @@ function buildPreviewHTML(form) {
         html += `<div class="preview-field"><strong>${escapeHtml(el.placeholder || 'Pole')}:</strong><span>${escapeHtml(el.value).replace(/\n/g, '<br>')}</span></div>`;
       }
     } else if (el.tagName === 'DIV') {
-      // Wiersz z datą i godziną lub załączniki-preview
       const inputs = el.querySelectorAll('input');
       const attachPreviews = el.querySelectorAll('.attachment-item');
       if (el.classList.contains('attachments-preview')) {
@@ -915,7 +914,6 @@ function buildPreviewHTML(form) {
           html += `</div>`;
         }
       } else if (el.classList.contains('file-upload-area')) {
-        // pomiń
       } else {
         inputs.forEach(inp => {
           if (inp.value.trim()) {
@@ -930,7 +928,6 @@ function buildPreviewHTML(form) {
         html += `<div class="preview-check"><span class="checkmark">&#10003;</span> ${escapeHtml(text)}</div>`;
       }
     } else if (el.tagName === 'BR' || el.tagName === 'BUTTON') {
-      // pomiń
     }
     i++;
   }

@@ -298,10 +298,10 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: #d9d9d9;
+      background: #1a1f2e;
       z-index: 9999;
       overflow-y: auto;
-      padding: 16px;
+      padding: 32px 16px;
     }
 
     #preview-overlay.visible {
@@ -309,12 +309,12 @@
     }
 
     #preview-content {
-      max-width: 1400px;
+      max-width: 900px;
       margin: 0 auto;
-      background: #d9d9d9;
-      border-radius: 0;
-      padding: 14px 18px 20px;
-      box-shadow: none;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 40px 48px 48px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.45);
     }
 
     #preview-content .preview-logo {
@@ -328,33 +328,38 @@
 
     #preview-content h1 {
       color: #001a4d;
-      font-size: 42px;
+      font-size: 32px;
       border-bottom: 3px solid #0d5ad8;
-      padding-bottom: 8px;
-      margin-bottom: 18px;
+      padding-bottom: 10px;
+      margin-bottom: 24px;
       text-align: center;
       font-weight: 700;
       letter-spacing: 0.2px;
     }
 
     #preview-content h3 {
-      color: #333;
-      font-size: 1.05em;
-      text-transform: none;
-      letter-spacing: 0;
-      border-bottom: none;
-      padding-bottom: 0;
-      margin: 14px 0 8px;
+      color: #001a4d;
+      font-size: 0.95em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #d0d7e8;
+      padding-bottom: 5px;
+      margin: 22px 0 10px;
     }
 
     #preview-content .preview-field {
-      margin-bottom: 5px;
-      font-size: 1em;
-      line-height: 1.35;
+      margin-bottom: 8px;
+      font-size: 0.97em;
+      line-height: 1.5;
+      padding: 7px 10px;
+      background: #f4f6fb;
+      border-left: 3px solid #0d5ad8;
+      border-radius: 3px;
     }
 
     #preview-content .preview-field strong {
-      color: #1f1f1f;
+      color: #001a4d;
       font-weight: 700;
     }
 
@@ -416,8 +421,8 @@
     }
 
     .preview-actions {
-      max-width: 1400px;
-      margin: 25px auto 0;
+      max-width: 900px;
+      margin: 20px auto 40px;
       display: flex;
       gap: 15px;
       justify-content: center;
@@ -491,27 +496,6 @@
       background: rgba(255,255,255,0.25);
     }
 
-    .btn-download-pdf {
-      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-      color: white;
-      border: none;
-      padding: 14px 35px;
-      font-size: 1em;
-      font-weight: 700;
-      border-radius: 5px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-    }
-
-    .btn-download-pdf:hover {
-      background: linear-gradient(135deg, #1e7e34 0%, #145a25 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
-    }
-
     .logo {
       text-align: center;
       margin-bottom: 30px;
@@ -559,11 +543,11 @@
 
       #preview-content {
         max-width: 100%;
-        padding: 12px;
+        padding: 24px 18px;
       }
 
       #preview-content h1 {
-        font-size: 30px;
+        font-size: 24px;
       }
 
       .logo img {
@@ -667,7 +651,6 @@
   <div id="preview-content"></div>
   <div class="preview-actions">
     <button class="btn-back" onclick="closePreview()">&#8592; Wróć do formularza</button>
-    <button class="btn-download-pdf" id="btn-download-pdf" onclick="downloadFromPreview()">&#8595; Pobierz jako PDF</button>
   </div>
 </div>
 
@@ -677,8 +660,6 @@
   <div id="attachment-zoom-name" class="zoom-name"></div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 function openTab(tabId) {
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -819,112 +800,7 @@ function closeAttachmentZoom(event) {
   document.getElementById('attachment-zoom-image').src = '';
 }
 
-function addCanvasToPdf(pdf, canvas) {
-  const imgData = canvas.toDataURL('image/png');
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  let heightLeft = imgHeight;
-  let position = 0;
 
-  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position -= pageHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
-}
-
-function loadImage(dataUrl) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = dataUrl;
-  });
-}
-
-async function downloadFromPreview() {
-  const btn = document.getElementById('btn-download-pdf');
-  const original = btn.textContent;
-  btn.textContent = 'Generowanie...';
-  btn.disabled = true;
-
-  try {
-    const previewContent = document.getElementById('preview-content');
-    const clonedContent = previewContent.cloneNode(true);
-    const attachmentsSection = clonedContent.querySelector('.preview-attachments');
-    if (attachmentsSection) {
-      const attachmentsHeader = attachmentsSection.previousElementSibling;
-      if (attachmentsHeader && attachmentsHeader.tagName === 'H3') {
-        attachmentsHeader.remove();
-      }
-      attachmentsSection.remove();
-    }
-
-    const tempContainer = document.createElement('div');
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.left = '-99999px';
-    tempContainer.style.top = '0';
-    tempContainer.style.width = previewContent.offsetWidth + 'px';
-    tempContainer.appendChild(clonedContent);
-    document.body.appendChild(tempContainer);
-
-    const mainCanvas = await html2canvas(clonedContent, {
-      scale: 2,
-      backgroundColor: '#d9d9d9',
-      useCORS: true
-    });
-
-    document.body.removeChild(tempContainer);
-
-    const jsPDF = window.jspdf.jsPDF;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    addCanvasToPdf(pdf, mainCanvas);
-
-    const attachmentItems = currentForm ? Array.from(currentForm.querySelectorAll('.attachment-item')) : [];
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    for (let index = 0; index < attachmentItems.length; index++) {
-      const item = attachmentItems[index];
-      const imageSrc = item.dataset.dataUrl;
-      const fileName = item.dataset.name || `Zalacznik ${index + 1}`;
-
-      if (!imageSrc) continue;
-
-      const image = await loadImage(imageSrc);
-      const maxWidth = pageWidth - 20;
-      const maxHeight = pageHeight - 36;
-      const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
-      const renderWidth = image.naturalWidth * ratio;
-      const renderHeight = image.naturalHeight * ratio;
-      const x = (pageWidth - renderWidth) / 2;
-      const y = 20 + (maxHeight - renderHeight) / 2;
-
-      pdf.addPage();
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(12);
-      pdf.text(`Zalacznik ${index + 1}`, 10, 10);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(10);
-      pdf.text(fileName.substring(0, 120), 10, 16);
-      pdf.addImage(imageSrc, 'JPEG', x, y, renderWidth, renderHeight);
-    }
-
-    pdf.save(`zgloszenie_${new Date().getTime()}.pdf`);
-  } catch (err) {
-    console.error(err);
-    alert('Błąd podczas generowania PDF. Spróbuj ponownie.');
-  } finally {
-    btn.textContent = original;
-    btn.disabled = false;
-  }
-}
 </script>
 
 </body>

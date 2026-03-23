@@ -712,14 +712,14 @@
 </div>
 
 <header>
-  <h1>Donos.Digital</h1>
-  <p>Donos.Digital to prosta i intuicyjna platforma online, umożliwiająca szybkie przygotowanie zgłoszenia do prokuratury. Serwis prowadzi obywatela krok po kroku przez formularz, pomagając w uporządkowany sposób opisać zdarzenie i zebrać niezbędne informacje. Dzięki temu proces składania zawiadomienia staje się bardziej przejrzysty, wygodny i dostępny dla każdego.</p>
+  <h1>Donos Digital</h1>
+  <p>Donos Digital to prosta i intuicyjna platforma online, umożliwiająca szybkie przygotowanie zawiadomienia o możliwości popełnienia przestępstwa. Serwis prowadzi obywatela krok po kroku przez formularz, pomagając w uporządkowany sposób opisać zdarzenie i zebrać niezbędne informacje. Dzięki temu proces składania zawiadomienia staje się bardziej przejrzysty, wygodny i dostępny dla każdego.</p>
 </header>
 
 <div class="container">
 
   <div id="karne" class="tab active">
-    <h2>Zgłoszenie sprawy karnej / funkcjonariusza
+    <h2>Zawiadomienie o możliwości popełnienia przestępstwa
     </h2>
     <form>
       <h3>Dane zgłaszającego</h3>
@@ -864,7 +864,6 @@ function buildPreviewHTML(form) {
   const now = new Date();
   const generatedAt = now.toLocaleString('pl-PL');
   html += `<div class="preview-meta"><div class="preview-meta-line"><span><strong>Data wygenerowania:</strong> ${generatedAt}</span></div></div>`;
-  html += `<div class="preview-office"><p><strong>Adresat:</strong> Prokuratura Stanowa</p><p><strong>Temat:</strong> Zawiadomienie</p></div>`;
 
   let sectionOpen = false;
   const closeSection = () => {

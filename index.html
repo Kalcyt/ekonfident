@@ -309,12 +309,14 @@
     }
 
     #preview-content {
-      max-width: 900px;
+      max-width: 794px;
       margin: 0 auto;
       background: #ffffff;
       border-radius: 8px;
       padding: 40px 48px 48px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+      color: #1b2430;
+      line-height: 1.5;
     }
 
     #preview-content .preview-logo {
@@ -328,7 +330,7 @@
 
     #preview-content h1 {
       color: #001a4d;
-      font-size: 32px;
+      font-size: 30px;
       border-bottom: 3px solid #0d5ad8;
       padding-bottom: 10px;
       margin-bottom: 24px;
@@ -339,18 +341,36 @@
 
     #preview-content h3 {
       color: #001a4d;
-      font-size: 0.95em;
+      font-size: 0.93em;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border-bottom: 1px solid #d0d7e8;
       padding-bottom: 5px;
-      margin: 22px 0 10px;
+      margin: 0 0 12px;
+    }
+
+    #preview-content .preview-meta {
+      margin-bottom: 20px;
+      padding: 10px 12px;
+      background: #edf4ff;
+      border: 1px solid #d4e3ff;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #1a355f;
+    }
+
+    #preview-content .preview-section {
+      margin-bottom: 16px;
+      border: 1px solid #d9e1f2;
+      border-radius: 4px;
+      padding: 12px;
+      background: #fbfdff;
     }
 
     #preview-content .preview-field {
       margin-bottom: 8px;
-      font-size: 0.97em;
+      font-size: 0.95em;
       line-height: 1.5;
       padding: 7px 10px;
       background: #f4f6fb;
@@ -367,8 +387,12 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin: 5px 0;
-      font-size: 1em;
+      margin: 7px 0;
+      font-size: 0.95em;
+      background: #f4f6fb;
+      border-left: 3px solid #0d5ad8;
+      border-radius: 3px;
+      padding: 7px 10px;
     }
 
     #preview-content .preview-check .checkmark {
@@ -385,7 +409,7 @@
     #preview-content .preview-attachments {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 14px;
       margin-top: 10px;
     }
 
@@ -395,6 +419,8 @@
       overflow: hidden;
       width: 100%;
       background: white;
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     #preview-content .preview-attachment img {
@@ -416,15 +442,25 @@
       margin-top: 30px;
       border-top: 3px solid #0d5ad8;
       padding-top: 15px;
-      font-size: 1em;
+      font-size: 0.95em;
       color: #333;
+    }
+
+    #preview-content .preview-section,
+    #preview-content .preview-field,
+    #preview-content .preview-check,
+    #preview-content .preview-footer,
+    #preview-content .preview-meta,
+    #preview-content h3 {
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     .preview-actions {
       max-width: 900px;
       margin: 20px auto 40px;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 15px;
       align-items: center;
     }
@@ -522,6 +558,24 @@
       background: rgba(255,255,255,0.25);
     }
 
+    .btn-pdf {
+      background: linear-gradient(135deg, #1f6fdd 0%, #0f4fa8 100%);
+      color: #ffffff;
+      border: none;
+      padding: 14px 35px;
+      font-size: 1em;
+      font-weight: 700;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(15, 79, 168, 0.4);
+    }
+
+    .btn-pdf:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(15, 79, 168, 0.5);
+    }
+
     .logo {
       text-align: center;
       margin-bottom: 30px;
@@ -576,6 +630,15 @@
         font-size: 24px;
       }
 
+      .preview-actions {
+        width: 100%;
+      }
+
+      .btn-pdf,
+      .btn-back {
+        width: 100%;
+      }
+
       .logo img {
         max-width: 120px;
       }
@@ -611,7 +674,7 @@
 
       <h3>Szczegóły sprawy</h3>
       <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-        <input type="date" placeholder="Data zdarzenia" required style="flex: 1;">
+        <input type="date" placeholder="Data zdarzenia" max="2026-12-31" required style="flex: 1;">
         <input type="time" placeholder="Godzina" required style="flex: 1;">
       </div>
       <input type="text" placeholder="Miejsce zdarzenia" required>
@@ -648,7 +711,7 @@
 
       <h3>Szczegóły sprawy</h3>
       <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-        <input type="date" placeholder="Data zdarzenia" required style="flex: 1;">
+        <input type="date" placeholder="Data zdarzenia" max="2026-12-31" required style="flex: 1;">
         <input type="time" placeholder="Godzina" required style="flex: 1;">
       </div>
       <input type="text" placeholder="Miejsce zdarzenia" required>
@@ -675,9 +738,10 @@
 <!-- Nakładka podglądu -->
 <div id="preview-overlay">
   <div class="preview-overlay-header">Podgląd formularza</div>
-  <div id="preview-content"></div>
+  <div id="preview-content" class="preview-document"></div>
   <div class="preview-actions">
     <p class="preview-print-notice">Niniejsze zgłoszenie należy wydrukować i przekazać do Biura Prokuratura.</p>
+    <button type="button" class="btn-pdf" onclick="downloadPreviewPDF()">Pobierz formularz jako PDF</button>
     <button class="btn-back" onclick="closePreview()">&#8592; Wróć do formularza</button>
   </div>
 </div>
@@ -687,6 +751,8 @@
   <img id="attachment-zoom-image" src="" alt="Powiększony załącznik">
   <div id="attachment-zoom-name" class="zoom-name"></div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
 function openTab(tabId) {
@@ -732,11 +798,25 @@ function buildPreviewHTML(form) {
     .replace(/'/g, '&#39;');
 
   const children = Array.from(form.children);
+  const now = new Date();
+  const generatedAt = now.toLocaleString('pl-PL');
+  html += `<div class="preview-meta"><strong>Data wygenerowania:</strong> ${generatedAt}</div>`;
+
+  let sectionOpen = false;
+  const closeSection = () => {
+    if (sectionOpen) {
+      html += `</section>`;
+      sectionOpen = false;
+    }
+  };
+
   let i = 0;
   while (i < children.length) {
     const el = children[i];
     if (el.tagName === 'H3') {
-      // Zachowujemy układ podobny do poprzedniego PDF: bez dodatkowych nagłówków sekcji
+      closeSection();
+      html += `<section class="preview-section"><h3>${escapeHtml(el.textContent.trim())}</h3>`;
+      sectionOpen = true;
     } else if (el.tagName === 'INPUT') {
       if (el.type === 'checkbox') {
         if (el.checked) {
@@ -784,8 +864,10 @@ function buildPreviewHTML(form) {
     i++;
   }
 
+  closeSection();
+
   html += `<div class="preview-footer">
-    <p><strong>Data wygenerowania:</strong> ${new Date().toLocaleString('pl-PL')}</p>
+    <p><strong>Podpis zgłaszającego:</strong> ..............................................................</p>
   </div>`;
 
   return html;
@@ -810,6 +892,38 @@ function showPreview(form) {
 function closePreview() {
   document.getElementById('preview-overlay').classList.remove('visible');
   currentForm = null;
+}
+
+function downloadPreviewPDF() {
+  const content = document.getElementById('preview-content');
+  if (!content || !content.innerHTML.trim()) {
+    alert('Najpierw wygeneruj podgląd formularza.');
+    return;
+  }
+
+  const title = content.querySelector('h1') ? content.querySelector('h1').textContent.trim() : 'formularz';
+  const safeTitle = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+  const datePart = new Date().toISOString().slice(0, 10);
+  const filename = `zawiadomienie-${safeTitle || 'formularz'}-${datePart}.pdf`;
+
+  const options = {
+    margin: [10, 8, 10, 8],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      scrollX: 0,
+      scrollY: 0
+    },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: {
+      mode: ['css', 'avoid-all'],
+      avoid: ['.preview-section', '.preview-field', '.preview-check', '.preview-attachment', '.preview-footer', '.preview-meta', 'h3']
+    }
+  };
+
+  html2pdf().set(options).from(content).save();
 }
 
 function openAttachmentZoom(src, name) {

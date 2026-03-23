@@ -396,6 +396,7 @@
       width: 100%;
       height: auto;
       display: block;
+      cursor: zoom-in;
     }
 
     #preview-content .preview-attachment p {
@@ -420,6 +421,58 @@
       display: flex;
       gap: 15px;
       justify-content: center;
+    }
+
+    .attachment-zoom {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .attachment-zoom.visible {
+      display: flex;
+    }
+
+    .attachment-zoom img {
+      max-width: 95vw;
+      max-height: 85vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+      background: #fff;
+    }
+
+    .attachment-zoom .zoom-name {
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+      max-width: 90vw;
+      word-break: break-word;
+    }
+
+    .attachment-zoom .zoom-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: rgba(0, 0, 0, 0.35);
+      color: #fff;
+      font-size: 24px;
+      line-height: 34px;
+      text-align: center;
+      cursor: pointer;
     }
 
     .btn-back {
@@ -618,6 +671,12 @@
   </div>
 </div>
 
+<div id="attachment-zoom" class="attachment-zoom" onclick="closeAttachmentZoom(event)">
+  <button type="button" class="zoom-close" onclick="closeAttachmentZoom(event)">&times;</button>
+  <img id="attachment-zoom-image" src="" alt="Powiększony załącznik">
+  <div id="attachment-zoom-name" class="zoom-name"></div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
@@ -691,7 +750,7 @@ function buildPreviewHTML(form) {
         if (attachPreviews.length > 0) {
           html += `<h3>Załączniki (${attachPreviews.length})</h3><div class="preview-attachments">`;
           attachPreviews.forEach(item => {
-            html += `<div class="preview-attachment"><img src="${item.dataset.dataUrl}" alt="${escapeHtml(item.dataset.name || 'załącznik')}"><p>${escapeHtml(item.dataset.name || '')}</p></div>`;
+            html += `<div class="preview-attachment"><img src="${item.dataset.dataUrl}" data-name="${escapeHtml(item.dataset.name || 'załącznik')}" alt="${escapeHtml(item.dataset.name || 'załącznik')}"><p>${escapeHtml(item.dataset.name || '')}</p></div>`;
           });
           html += `</div>`;
         }
@@ -731,6 +790,9 @@ function showPreview(form) {
   }
   currentForm = form;
   document.getElementById('preview-content').innerHTML = buildPreviewHTML(form);
+  document.querySelectorAll('#preview-content .preview-attachment img').forEach((img) => {
+    img.addEventListener('click', () => openAttachmentZoom(img.getAttribute('src'), img.getAttribute('data-name') || 'Załącznik'));
+  });
   const overlay = document.getElementById('preview-overlay');
   overlay.classList.add('visible');
   overlay.scrollTop = 0;
@@ -741,43 +803,127 @@ function closePreview() {
   currentForm = null;
 }
 
-function downloadFromPreview() {
+function openAttachmentZoom(src, name) {
+  const zoom = document.getElementById('attachment-zoom');
+  document.getElementById('attachment-zoom-image').src = src;
+  document.getElementById('attachment-zoom-name').textContent = name;
+  zoom.classList.add('visible');
+}
+
+function closeAttachmentZoom(event) {
+  if (event && event.target && !event.target.closest('.zoom-close') && event.target.id !== 'attachment-zoom') {
+    return;
+  }
+  const zoom = document.getElementById('attachment-zoom');
+  zoom.classList.remove('visible');
+  document.getElementById('attachment-zoom-image').src = '';
+}
+
+function addCanvasToPdf(pdf, canvas) {
+  const imgData = canvas.toDataURL('image/png');
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft > 0) {
+    position -= pageHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+}
+
+function loadImage(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+async function downloadFromPreview() {
   const btn = document.getElementById('btn-download-pdf');
   const original = btn.textContent;
   btn.textContent = 'Generowanie...';
   btn.disabled = true;
 
-  const content = document.getElementById('preview-content');
-  html2canvas(content, {
-    scale: 2,
-    backgroundColor: '#ffffff',
-    useCORS: true
-  }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const imgWidth = 210;
-    const pageHeight = 297;
-    let imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
+  try {
+    const previewContent = document.getElementById('preview-content');
+    const clonedContent = previewContent.cloneNode(true);
+    const attachmentsSection = clonedContent.querySelector('.preview-attachments');
+    if (attachmentsSection) {
+      const attachmentsHeader = attachmentsSection.previousElementSibling;
+      if (attachmentsHeader && attachmentsHeader.tagName === 'H3') {
+        attachmentsHeader.remove();
+      }
+      attachmentsSection.remove();
+    }
+
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-99999px';
+    tempContainer.style.top = '0';
+    tempContainer.style.width = previewContent.offsetWidth + 'px';
+    tempContainer.appendChild(clonedContent);
+    document.body.appendChild(tempContainer);
+
+    const mainCanvas = await html2canvas(clonedContent, {
+      scale: 2,
+      backgroundColor: '#d9d9d9',
+      useCORS: true
+    });
+
+    document.body.removeChild(tempContainer);
+
     const jsPDF = window.jspdf.jsPDF;
     const pdf = new jsPDF('p', 'mm', 'a4');
-    let position = 0;
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-    while (heightLeft > 0) {
-      position -= pageHeight;
+    addCanvasToPdf(pdf, mainCanvas);
+
+    const attachmentItems = currentForm ? Array.from(currentForm.querySelectorAll('.attachment-item')) : [];
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    for (let index = 0; index < attachmentItems.length; index++) {
+      const item = attachmentItems[index];
+      const imageSrc = item.dataset.dataUrl;
+      const fileName = item.dataset.name || `Zalacznik ${index + 1}`;
+
+      if (!imageSrc) continue;
+
+      const image = await loadImage(imageSrc);
+      const maxWidth = pageWidth - 20;
+      const maxHeight = pageHeight - 36;
+      const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
+      const renderWidth = image.naturalWidth * ratio;
+      const renderHeight = image.naturalHeight * ratio;
+      const x = (pageWidth - renderWidth) / 2;
+      const y = 20 + (maxHeight - renderHeight) / 2;
+
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(12);
+      pdf.text(`Zalacznik ${index + 1}`, 10, 10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.text(fileName.substring(0, 120), 10, 16);
+      pdf.addImage(imageSrc, 'JPEG', x, y, renderWidth, renderHeight);
     }
+
     pdf.save(`zgloszenie_${new Date().getTime()}.pdf`);
-    btn.textContent = original;
-    btn.disabled = false;
-  }).catch(err => {
+  } catch (err) {
     console.error(err);
     alert('Błąd podczas generowania PDF. Spróbuj ponownie.');
+  } finally {
     btn.textContent = original;
     btn.disabled = false;
-  });
+  }
 }
 </script>
 

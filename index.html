@@ -398,6 +398,14 @@
       display: grid;
       grid-template-columns: minmax(180px, 40%) 1fr;
       gap: 10px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    #preview-content .preview-field span {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
     }
 
     #preview-content .preview-field strong {
@@ -723,13 +731,13 @@
     </h2>
     <form>
       <h3>Dane zgłaszającego</h3>
-      <input type="text" placeholder="Imię" required>
-      <input type="text" placeholder="Nazwisko" required>
-      <input type="text" placeholder="Numer SSN" required>
-      <input type="tel" placeholder="Numer telefonu" required>
+      <input type="text" placeholder="Imię" required maxlength="20">
+      <input type="text" placeholder="Nazwisko" required maxlength="20">
+      <input type="text" placeholder="Numer SSN" required maxlength="20">
+      <input type="tel" placeholder="Numer telefonu" required maxlength="20">
 
       <h3>Dane osoby / podmiotu</h3>
-      <input type="text" placeholder="Imię i nazwisko / nazwa firmy" required>
+      <input type="text" placeholder="Imię i nazwisko / nazwa firmy" required maxlength="20">
       <textarea placeholder="Dodatkowe informacje (np. adres, szczegóły)"></textarea>
 
       <h3>Szczegóły sprawy</h3>
@@ -760,13 +768,13 @@
     <h2>Zgłoszenie naruszenia przez funkcjonariusza</h2>
     <form>
       <h3>Dane zgłaszającego</h3>
-      <input type="text" placeholder="Imię" required>
-      <input type="text" placeholder="Nazwisko" required>
-      <input type="text" placeholder="Numer SSN" required>
-      <input type="tel" placeholder="Numer telefonu" required>
+      <input type="text" placeholder="Imię" required maxlength="20">
+      <input type="text" placeholder="Nazwisko" required maxlength="20">
+      <input type="text" placeholder="Numer SSN" required maxlength="20">
+      <input type="tel" placeholder="Numer telefonu" required maxlength="20">
 
       <h3>Dane funkcjonariusza</h3>
-      <input type="text" placeholder="Imię i nazwisko / jednostka" required>
+      <input type="text" placeholder="Imię i nazwisko / jednostka" required maxlength="20">
       <textarea placeholder="Dodatkowe informacje (np. nr odznaki, adres)"></textarea>
 
       <h3>Szczegóły sprawy</h3>
